@@ -33,5 +33,5 @@ elif argument == "--get" or argument == '--g':
     name = input("Name: ")
     RetrieveEntry(masterPassword, "abc", name)
 
-elif argument == "--config" or argument == "--c":
+elif argument == "--init" or argument == "--i":
     Config()
