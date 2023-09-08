@@ -15,10 +15,6 @@ from rich.console import Console
 console = Console()
 
 
-def generateDeviceSecret(length=10):
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-
-
 def Config():
     try:
         # Configure database
@@ -43,11 +39,11 @@ def Config():
 
             # Compute Master Key from Email and MASTER PASSWORD
             masterKey = computeMasterKey(
-                email.encode('utf-8'), masterPassword.encode('utf-8'))
+                salt=email.encode('utf-8'), payload=masterPassword.encode('utf-8'))
             
             # Compute Master Password Hash from Master Key and MASTER PASSWORD
             masterPasswordHash = computeMasterPasswordHash(
-                masterPassword.encode('utf-8'), masterKey)
+                salt=masterPassword.encode('utf-8'), payload=masterKey)
 
             # Add them to Database
             query = "INSERT INTO passguard.secrets (email, masterPassword_hash) VALUES (%s, %s)"
@@ -60,6 +56,6 @@ def Config():
             db.close()
 
     except Exception as e:
-        printC("[red][!] An error occured while trying to create database.")
+        printC("[red][!] An error occured while trying to create database!")
         console.print_exception()
         sys.exit(0)

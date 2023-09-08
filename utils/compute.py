@@ -1,4 +1,6 @@
 import base64
+import string
+import secrets
 
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
@@ -20,3 +22,8 @@ def computeMasterKey(salt: bytes, payload: bytes) -> bytes:
 
 def computeMasterPasswordHash(salt: bytes, payload: bytes) -> bytes:
     return __computePBKDF2HMAC(salt=salt, payload=payload, iteration=1)
+
+
+def generateSalt(length=10) -> str:
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for i in range(length))
