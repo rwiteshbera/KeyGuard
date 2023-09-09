@@ -4,33 +4,76 @@ from getpass import getpass
 from compute.pbkdf2 import computeMasterKey
 from compute.pbkdf2 import computeMasterPasswordHash
 
+from utils.vault import connectVault
+from utils.input.input import setName
+from utils.input.input import setEmail
+from utils.input.input import setMasterPassword
+
 from rich import print as printC
 from rich.console import Console
 console = Console()
 
-def CreateNewVault():
+# Create 2 tables inside vault
+# secrets : To store admin login credentials
+# entry : Managing data inside the vault
+
+
+def __CreateNewVault():
+    print("Create a new vault:")
     try:
-        printC("[green]PassGuard 2023 v0.1")
-        print("Create a new vault:")
+        # Connect with vault
+        vault = connectVault()
+        cursor = vault.cursor()
 
-        # Enter User Email
-        email = input("Email: ")
+        # Create Table
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS secrets (name TEXT NOT NULL, email TEXT NOT NULL, master_password_hash TEXT NOT NULL)")
 
-        # Enter MASTER PASSWORD
-        masterPassword = getpass("Choose a MASTER PASSWORD: ")
-        if masterPassword != getpass("Re-type: ") and masterPassword != "":
-            printC("[yellow][-] Passworod doesn't match. [/yellow]")
-            sys.exit(0)
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS entries (name TEXT NOT NULL, token TEXT NOT NULL)")
 
-        # Compute Master Key from Email and MASTER PASSWORD
-        masterKey = computeMasterKey(
-            salt=email.encode('utf-8'), payload=masterPassword.encode('utf-8'))
+        # Commit
+        vault.commit()
 
-        # Compute Master Password Hash from Master Key and MASTER PASSWORD
-        masterPasswordHash = computeMasterPasswordHash(
-            salt=masterPassword.encode('utf-8'), payload=masterKey)
+        # Close the vault
+        vault.close()
 
     except Exception as e:
-        printC("[red][!] An error occured while trying to create database!")
-        console.print_exception()
+        printC("[red][!] An error occured while trying to create vault")
+        sys.exit(0)
+
+
+def ConfigureVault():
+    __CreateNewVault()
+    try:
+        name = setName()
+        email = setEmail()
+        masterPassword = setMasterPassword()
+        
+        # Compute Master Key from Email and MASTER PASSWORD
+        # From (salt = email, payload = MASTER PASSWORD) -> To (Master Key)
+        masterKey = computeMasterKey(
+        salt=email.encode('utf-8'), payload=masterPassword.encode('utf-8'))
+
+        # Compute Master Password Hash from Master Key and MASTER PASSWORD
+        # From (salt = MASTER PASSWORD, payload = Master Key) -> To (Master Password Hash)
+        masterPasswordHash = computeMasterPasswordHash(
+        salt=masterPassword.encode('utf-8'), payload=masterKey)
+
+        # Connect with vault
+        vault = connectVault()
+        cursor = vault.cursor()
+
+        # Insert data
+        cursor.execute("INSERT INTO secrets (name, email, master_password_hash) VALUES (?, ?, ?)",
+                           (name, email, masterPasswordHash))
+
+        # Commit
+        vault.commit()
+
+        # Close the vault
+        vault.close()
+
+    except Exception as e:
+        printC("[red][!] An error occured while trying to configure vault")
         sys.exit(0)

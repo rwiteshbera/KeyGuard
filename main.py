@@ -4,8 +4,8 @@ from getpass import getpass
 
 from utils.entry import AddNewEntry
 from utils.entry import RetrieveEntry
-from utils.init import CreateNewVault
-
+from utils.init import ConfigureVault
+from utils.banner import DisplayBanner
 from rich import print as printC
 from rich.console import Console
 console = Console()
@@ -15,6 +15,7 @@ if len(sys.argv) <= 1:
 
 argument = sys.argv[1]
 
+DisplayBanner()
 
 if argument == "--add" or argument == '--a':
     # Enter Email
@@ -43,4 +44,6 @@ elif argument == "--get" or argument == '--g':
     RetrieveEntry(name)
 
 elif argument == "--init" or argument == "--i":
-    CreateNewVault()
+    ConfigureVault()
+
+
