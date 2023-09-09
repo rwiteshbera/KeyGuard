@@ -12,7 +12,6 @@ iv = os.urandom(16)
 # Mode = CBC (Cipher Block Chaining)
 cipher = Cipher(algorithms.AES256(key), modes.CBC(iv))
 
-
 # Encrypt New Site Entry
 def EncryptEntry(data_bytes: bytes) -> bytes:
     # Padding data_bytes
