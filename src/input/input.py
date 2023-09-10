@@ -6,7 +6,7 @@ from rich.console import Console
 console = Console()
 
 # Prompt for Name
-def setName():
+def promptName():
     name = ""
     for attempt in range(2):
         # Enter your name
@@ -29,7 +29,7 @@ def setName():
     return name
 
 # Prompt for Email
-def setEmail():
+def promptEmail():
     email = ""
     for attempt in range(2):
         # Enter User Email
@@ -51,8 +51,8 @@ def setEmail():
 
     return email
 
-# Prompt for New Master Password
-def setMasterPassword():
+# Prompt for creating New Master Password
+def createNewMasterPassword():
     masterPassword = ""
     for attempt in range(2):
         # Enter MASTER PASSWORD
@@ -79,8 +79,8 @@ def setMasterPassword():
     return masterPassword
 
 
-# Ask Master Password
-def askMasterPassword():
+# Prompt Master Password
+def promptMasterPassword():
     masterPassword = ""
     for attempt in range(2):
         # Enter MASTER PASSWORD

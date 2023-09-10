@@ -4,8 +4,8 @@ from getpass import getpass
 
 from src.compute.aes import EncryptAES256
 from src.compute.entropy import generateSecretBits
-from src.input.input import setEmail
-from src.input.input import askMasterPassword
+from src.input.input import promptEmail
+from src.input.input import promptMasterPassword
 from src.compute.pbkdf2 import computeMasterKey
 from src.config.vault import connectVault
 
@@ -18,10 +18,10 @@ def AddNewEntry():
     print("Login ")
 
     # Enter Email
-    email = setEmail()
+    email = promptEmail()
 
-    # Ask MASTER PASSWORD
-    masterPassword = askMasterPassword()
+    # Enter MASTER PASSWORD
+    masterPassword = promptMasterPassword()
 
     print("\nAdd New Entry")
     name = input("name: ")

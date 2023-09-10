@@ -5,9 +5,9 @@ from src.compute.pbkdf2 import computeMasterKey
 from src.compute.pbkdf2 import computeMasterPasswordHash
 
 from src.config.vault import connectVault
-from src.input.input import setName
-from src.input.input import setEmail
-from src.input.input import setMasterPassword
+from src.input.input import promptName
+from src.input.input import promptEmail
+from src.input.input import createNewMasterPassword
 
 from rich import print as printC
 from rich.console import Console
@@ -47,9 +47,9 @@ def __CreateNewVault():
 def ConfigureVault():
     __CreateNewVault()
     try:
-        name = setName()
-        email = setEmail()
-        masterPassword = setMasterPassword()
+        name = promptName()
+        email = promptEmail()
+        masterPassword = createNewMasterPassword()
 
         # Compute Master Key from Email and MASTER PASSWORD
         # From (salt = email, payload = MASTER PASSWORD) -> To (Master Key)
