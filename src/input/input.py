@@ -99,5 +99,5 @@ def promptMasterPassword():
         printC(
             "[yellow][!] Exiting... [/yellow]")
         sys.exit(0)
-
     return masterPassword
+

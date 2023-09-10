@@ -2,10 +2,16 @@ import sys
 
 from getpass import getpass
 
+from src.config.init import ConfigureVault
 from src.entry.entry import AddNewEntry
 from src.entry.entry import RetrieveEntry
-from src.config.init import ConfigureVault
+
 from src.banner import DisplayBanner
+from src.input.input import promptName
+from src.input.input import promptEmail
+from src.input.input import createNewMasterPassword
+from src.input.input import promptMasterPassword
+
 from rich import print as printC
 from rich.console import Console
 console = Console()
@@ -18,7 +24,20 @@ argument = sys.argv[1]
 DisplayBanner()
 
 if argument == "--add" or argument == '--a':
-    AddNewEntry()
+    print("Login ")
+    # Enter Email
+    email = promptEmail()
+
+    # Enter MASTER PASSWORD
+    masterPassword = promptMasterPassword()
+
+    print("\nAdd New Entry")
+    name = input("name: ")
+    siteurl = input("URL: ")
+    username = input("Username: ")
+    password = getpass("Password: ")
+    
+    AddNewEntry(email, masterPassword, name, siteurl, username, password)
 
 
 elif argument == "--get" or argument == '--g':
@@ -29,9 +48,14 @@ elif argument == "--get" or argument == '--g':
     masterPassword = getpass("Enter MASTER PASSWORD: ")
 
     name = input("Name: ")
-    RetrieveEntry(name)
+
+    RetrieveEntry(email, masterPassword, name)
 
 elif argument == "--init" or argument == "--i":
-    ConfigureVault()
+    name = promptName()
+    email = promptEmail()
+    masterPassword = createNewMasterPassword()
+
+    ConfigureVault(name, email, masterPassword)
 
 

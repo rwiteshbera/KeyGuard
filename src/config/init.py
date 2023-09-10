@@ -5,9 +5,7 @@ from src.compute.pbkdf2 import computeMasterKey
 from src.compute.pbkdf2 import computeMasterPasswordHash
 from src.compute.entropy import generateSecretBits
 from src.config.vault import connectVault
-from src.input.input import promptName
-from src.input.input import promptEmail
-from src.input.input import createNewMasterPassword
+
 
 from rich import print as printC
 from rich.console import Console
@@ -27,10 +25,10 @@ def __CreateNewVault():
 
         # Create Table
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS secrets (email TEXT PRIMARY KEY, name TEXT NOT NULL, master_password_hash TEXT NOT NULL)")
+            "CREATE TABLE IF NOT EXISTS secrets (email TEXT PRIMARY KEY, name TEXT NOT NULL, master_password_hash TEXT NOT NULL, vector TEXT NOT NULL)")
 
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS entries (name TEXT NOT NULL, token TEXT NOT NULL, admin TEXT NOT NULL, FOREIGN KEY (admin) REFERENCES secrets(email))")
+            "CREATE TABLE IF NOT EXISTS entries (name TEXT PRIMARY KEY, token TEXT NOT NULL, admin TEXT NOT NULL, FOREIGN KEY (admin) REFERENCES secrets(email))")
 
         # Commit
         vault.commit()
@@ -44,13 +42,9 @@ def __CreateNewVault():
         sys.exit(0)
 
 
-def ConfigureVault():
+def ConfigureVault(name: str, email: str, masterPassword: str):
     __CreateNewVault()
     try:
-        name = promptName()
-        email = promptEmail()
-        masterPassword = createNewMasterPassword()
-
         # Compute Master Key from Email and MASTER PASSWORD
         # From (salt = email, payload = MASTER PASSWORD) -> To (Master Key)
         masterKey = computeMasterKey(
@@ -61,14 +55,16 @@ def ConfigureVault():
         masterPasswordHash = computeMasterPasswordHash(
             salt=masterPassword.encode('utf-8'), payload=masterKey)
 
+        # Generate Vector
+        vector = generateSecretBits(128)
 
         # Connect with vault
         vault = connectVault()
         cursor = vault.cursor()
 
         # Insert data
-        cursor.execute("INSERT INTO secrets (name, email, master_password_hash) VALUES (?, ?, ?)",
-                       (name, email, masterPasswordHash))
+        cursor.execute("INSERT INTO secrets (name, email, master_password_hash, vector) VALUES (?, ?, ?, ?)",
+                       (name, email, masterPasswordHash, vector))
 
         # Commit
         vault.commit()
