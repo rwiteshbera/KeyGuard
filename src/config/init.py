@@ -3,7 +3,7 @@ from getpass import getpass
 
 from src.compute.pbkdf2 import computeMasterKey
 from src.compute.pbkdf2 import computeMasterPasswordHash
-
+from src.compute.entropy import generateSecretBits
 from src.config.vault import connectVault
 from src.input.input import promptName
 from src.input.input import promptEmail
@@ -30,7 +30,7 @@ def __CreateNewVault():
             "CREATE TABLE IF NOT EXISTS secrets (email TEXT PRIMARY KEY, name TEXT NOT NULL, master_password_hash TEXT NOT NULL)")
 
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS entries (name TEXT NOT NULL, token TEXT NOT NULL, email TEXT NOT NULL, iv TEXT NOT NULL, FOREIGN KEY (email) REFERENCES secrets(email))")
+            "CREATE TABLE IF NOT EXISTS entries (name TEXT NOT NULL, token TEXT NOT NULL, admin TEXT NOT NULL, FOREIGN KEY (admin) REFERENCES secrets(email))")
 
         # Commit
         vault.commit()
@@ -61,6 +61,7 @@ def ConfigureVault():
         masterPasswordHash = computeMasterPasswordHash(
             salt=masterPassword.encode('utf-8'), payload=masterKey)
 
+
         # Connect with vault
         vault = connectVault()
         cursor = vault.cursor()
@@ -79,4 +80,5 @@ def ConfigureVault():
 
     except Exception as e:
         printC("[red][!] An error occured while trying to configure vault")
+        console.print_exception()
         sys.exit(0)
