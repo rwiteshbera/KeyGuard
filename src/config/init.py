@@ -30,7 +30,7 @@ def __CreateNewVault():
             "CREATE TABLE IF NOT EXISTS secrets (email TEXT PRIMARY KEY, name TEXT NOT NULL, master_password_hash TEXT NOT NULL)")
 
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS entries (name TEXT NOT NULL, token TEXT NOT NULL)")
+            "CREATE TABLE IF NOT EXISTS entries (name TEXT NOT NULL, token TEXT NOT NULL, email TEXT NOT NULL, iv TEXT NOT NULL, FOREIGN KEY (email) REFERENCES secrets(email))")
 
         # Commit
         vault.commit()
@@ -40,6 +40,7 @@ def __CreateNewVault():
 
     except Exception as e:
         printC("[red][!] An error occured while trying to create vault")
+        console.print_exception()
         sys.exit(0)
 
 
@@ -70,6 +71,8 @@ def ConfigureVault():
 
         # Commit
         vault.commit()
+
+        printC("[green][+] Vault created successfully.")
 
         # Close the vault
         vault.close()

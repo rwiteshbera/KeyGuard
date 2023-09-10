@@ -5,7 +5,7 @@ from rich import print as printC
 from rich.console import Console
 console = Console()
 
-# Input User Name
+# Prompt for Name
 def setName():
     name = ""
     for attempt in range(2):
@@ -28,7 +28,7 @@ def setName():
 
     return name
 
-# Input Email
+# Prompt for Email
 def setEmail():
     email = ""
     for attempt in range(2):
@@ -51,7 +51,7 @@ def setEmail():
 
     return email
 
-# Input Master Password
+# Prompt for New Master Password
 def setMasterPassword():
     masterPassword = ""
     for attempt in range(2):
@@ -70,6 +70,30 @@ def setMasterPassword():
     if masterPassword != getpass("Re-type: "):
         printC("[yellow][-] Passworod doesn't match. [/yellow]")
         sys.exit(0)
+
+    if not masterPassword:
+        printC(
+            "[yellow][!] Exiting... [/yellow]")
+        sys.exit(0)
+
+    return masterPassword
+
+
+# Ask Master Password
+def askMasterPassword():
+    masterPassword = ""
+    for attempt in range(2):
+        # Enter MASTER PASSWORD
+        masterPassword = getpass("MASTER PASSWORD: ")
+        if not masterPassword:
+            if attempt == 0:
+                printC("[yellow][!] Master Password cannot be empty. [/yellow]")
+                continue
+            elif attempt == 1:
+                printC(
+                    "[red][X] You didn't provide the required details. Exiting... [/red]")
+                sys.exit(0)
+        break
 
     if not masterPassword:
         printC(

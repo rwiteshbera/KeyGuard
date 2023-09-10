@@ -18,19 +18,7 @@ argument = sys.argv[1]
 DisplayBanner()
 
 if argument == "--add" or argument == '--a':
-    # Enter Email
-    email = input("email: ")
-
-    # Ask MASTER PASSWORD
-    masterPassword = getpass("Enter MASTER PASSWORD: ")
-
-    print("Add new entry:")
-    name = input("name: ")
-    siteurl = input("URL: ")
-    username = input("Username: ")
-    password = getpass("Password: ")
-
-    AddNewEntry(name, siteurl, username, password)
+    AddNewEntry()
 
 
 elif argument == "--get" or argument == '--g':
