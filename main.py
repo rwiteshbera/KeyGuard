@@ -2,10 +2,10 @@ import sys
 
 from getpass import getpass
 
-from utils.entry import AddNewEntry
-from utils.entry import RetrieveEntry
-from utils.init import ConfigureVault
-from utils.banner import DisplayBanner
+from src.entry.entry import AddNewEntry
+from src.entry.entry import RetrieveEntry
+from src.config.init import ConfigureVault
+from src.banner import DisplayBanner
 from rich import print as printC
 from rich.console import Console
 console = Console()

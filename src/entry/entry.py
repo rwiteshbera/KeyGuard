@@ -2,7 +2,7 @@ import sys
 
 from getpass import getpass
 
-from compute.aes import EncryptEntry
+from src.compute.aes import EncryptEntry
 
 from rich import print as printC
 from rich.console import Console
