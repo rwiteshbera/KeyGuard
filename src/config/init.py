@@ -1,5 +1,7 @@
 import sys
+import os
 from getpass import getpass
+from cryptography.fernet import Fernet
 
 from src.compute.pbkdf2 import computeMasterKey
 from src.compute.pbkdf2 import computeMasterPasswordHash
@@ -54,9 +56,9 @@ def ConfigureVault(name: str, email: str, masterPassword: str):
         # From (salt = MASTER PASSWORD, payload = Master Key) -> To (Master Password Hash)
         masterPasswordHash = computeMasterPasswordHash(
             salt=masterPassword.encode('utf-8'), payload=masterKey)
-
+        
         # Generate Vector
-        vector = generateSecretBits(128)
+        vector = os.urandom(16)
 
         # Connect with vault
         vault = connectVault()
@@ -78,3 +80,4 @@ def ConfigureVault(name: str, email: str, masterPassword: str):
         printC("[red][!] An error occured while trying to configure vault")
         console.print_exception()
         sys.exit(0)
+

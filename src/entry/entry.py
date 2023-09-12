@@ -105,3 +105,26 @@ def RetrieveEntry(email: str, masterPassword: str, name: str):
         printC("[red][!] An error occured while trying to retrieve entry.")
         console.print_exception()
         sys.exit(0)
+
+
+# Verify Master Password
+def verifyMasterPassword(email: str, masterPassword: str):
+    # Connect with vault
+    vault = connectVault()
+    cursor = vault.cursor()
+
+    master_password_hash = cursor.execute(
+        'SELECT master_password_hash FROM secrets WHERE email = ?', (email,)).fetchone()
+
+    if master_password_hash is None:
+        printC("[red][-] No account found with this email")
+        sys.exit(0)
+
+    masterKey = computeMasterKey(
+        salt=email.encode('utf-8'), payload=masterPassword.encode('utf-8'))
+    masterPasswordHash = computeMasterPasswordHash(
+        salt=masterPassword.encode('utf-8'), payload=masterKey)
+
+    if master_password_hash != masterPasswordHash:
+        printC("[red][-] Wrong Credentials")
+        sys.exit(0)

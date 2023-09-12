@@ -5,12 +5,14 @@ from getpass import getpass
 from src.config.init import ConfigureVault
 from src.entry.entry import AddNewEntry
 from src.entry.entry import RetrieveEntry
+from src.entry.entry import verifyMasterPassword
 
 from src.banner import DisplayBanner
 from src.input.input import promptName
 from src.input.input import promptEmail
 from src.input.input import createNewMasterPassword
 from src.input.input import promptMasterPassword
+
 
 from rich import print as printC
 from rich.console import Console
@@ -31,6 +33,10 @@ if argument == "--add" or argument == '--a':
     # Enter MASTER PASSWORD
     masterPassword = promptMasterPassword()
 
+    # verifyMasterPassword
+    verifyMasterPassword(email=email, masterPassword=masterPassword)
+
+
     print("\nAdd New Entry")
     name = input("name: ")
     siteurl = input("URL: ")
@@ -47,6 +53,9 @@ elif argument == "--get" or argument == '--g':
     # Ask MASTER PASSWORD
     masterPassword = getpass("Enter MASTER PASSWORD: ")
 
+    # verifyMasterPassword
+    verifyMasterPassword(email=email, masterPassword=masterPassword)
+    
     name = input("Name: ")
 
     RetrieveEntry(email, masterPassword, name)
