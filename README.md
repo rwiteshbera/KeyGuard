@@ -1,10 +1,11 @@
 # PassGuard
+Command-line based password manager
 
 ### Technology Used
 1. Python
 2. Sqlite
 
 ### Security Flowchart
-- Account Creation
+Figma: https://shorturl.at/mCN58
 
-![User Account Creation](/assets/account_creation.png)
+![Passguard Flowchart](/assets/passguard.png)
