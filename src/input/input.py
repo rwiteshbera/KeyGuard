@@ -12,23 +12,14 @@ console = Console()
 
 def promptName():
     name = ""
-    for attempt in range(2):
+    while (True):
         # Enter your name
         name = input("Name: ")
         if not name:
-            if attempt == 0:
-                printC("[yellow][!] Name cannot be empty. [/yellow]")
-                continue
-            elif attempt == 1:
-                printC(
-                    "[red][X] You didn't provide the required details. Exiting... [/red]")
-                sys.exit(0)
-        break
-
-    if not name:
-        printC(
-            "[yellow][!] Exiting... [/yellow]")
-        sys.exit(0)
+            printC("[yellow][!] Name cannot be empty. [/yellow]")
+            continue
+        else:
+            break
 
     return name
 
@@ -37,30 +28,22 @@ def promptName():
 
 def promptEmail():
     email = ""
-    for attempt in range(2):
-        # Enter User Email
-        email = input("Email: ")
+    while (True):
         try:
-            email_info = email_validator.validate_email(email=email)
-            email = email_info.normalized
+            # Enter User Email
+            email = input("Email: ")
+            if not email:
+                printC("[yellow][!] Email cannot be empty. [/yellow]")
+                continue
+            else:
+                email_info = email_validator.validate_email(email=email)
+                email = email_info.normalized
+                break
+
         except Exception as e:
             printC(
                 "[red][X] Invalid email. [/red]")
-            sys.exit(0)
-        if not email:
-            if attempt == 0:
-                printC("[yellow][!] Email cannot be empty. [/yellow]")
-                continue
-            elif attempt == 1:
-                printC(
-                    "[red][X] You didn't provide the required details. Exiting... [/red]")
-                sys.exit(0)
-        break
-
-    if not email:
-        printC(
-            "[yellow][!] Exiting... [/yellow]")
-        sys.exit(0)
+            promptEmail()
 
     return email
 
@@ -77,56 +60,41 @@ def createNewMasterPassword(firstAttempt=True):
         print("- It must contain at least one uppercase alphabet.")
 
     masterPassword = ""
-    for attempt in range(2):
+
+    while (True):
         # Enter MASTER PASSWORD
         masterPassword = getpass("Choose a MASTER PASSWORD: ")
         if not masterPassword:
-            if attempt == 0:
-                printC("[yellow][!] Master Password cannot be empty. [/yellow]")
-                continue
-            elif attempt == 1:
-                printC(
-                    "[red][X] You didn't provide the required details. Exiting... [/red]")
-                sys.exit(0)
-        break
-
-    if not masterPassword:
-        printC(
-            "[yellow][!] Exiting... [/yellow]")
-        sys.exit(0)
+            printC("[yellow][!] Master Password cannot be empty. [/yellow]")
+            continue
+        else:
+            break
 
     if isValidMasterPassword(masterPassword) == False:
         createNewMasterPassword(firstAttempt=False)
-   
-    while(True):
+
+    while (True):
         if masterPassword != getpass("Re-type: "):
-            printC("[yellow][-] Passworod doesn't match. [/yellow]")
+            printC("[yellow][-] Password doesn't match. [/yellow]")
         else:
             break
-    
+
     return masterPassword
 
 
 # Prompt Master Password
 def promptMasterPassword():
     masterPassword = ""
-    for attempt in range(2):
+
+    while (True):
         # Enter MASTER PASSWORD
         masterPassword = getpass("MASTER PASSWORD: ")
         if not masterPassword:
-            if attempt == 0:
-                printC("[yellow][!] Master Password cannot be empty. [/yellow]")
-                continue
-            elif attempt == 1:
-                printC(
-                    "[red][X] You didn't provide the required details. Exiting... [/red]")
-                sys.exit(0)
-        break
+            printC("[yellow][!] Master Password cannot be empty. [/yellow]")
+            continue
+        else:
+            break
 
-    if not masterPassword:
-        printC(
-            "[yellow][!] Exiting... [/yellow]")
-        sys.exit(0)
     return masterPassword
 
 
