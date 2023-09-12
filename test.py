@@ -10,7 +10,7 @@ from rich.console import Console
 class TestVaultOperations(unittest.TestCase):
     def setUp(self):
         self.name = "Rwitesh Bera"
-        self.email = "test@gmail.com"
+        self.email = "testgmail.com"
         self.masterPassword = "abc"
         self.sitename = "Test"
         self.siteurl = "https://www.test.com"

@@ -51,7 +51,7 @@ elif argument == "--get" or argument == '--g':
     email = input("email: ")
 
     # Ask MASTER PASSWORD
-    masterPassword = getpass("Enter MASTER PASSWORD: ")
+    masterPassword = promptMasterPassword()
 
     # verifyMasterPassword
     verifyMasterPassword(email=email, masterPassword=masterPassword)
@@ -63,6 +63,7 @@ elif argument == "--get" or argument == '--g':
 elif argument == "--init" or argument == "--i":
     name = promptName()
     email = promptEmail()
+    
     masterPassword = createNewMasterPassword()
 
     ConfigureVault(name, email, masterPassword)

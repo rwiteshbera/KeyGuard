@@ -1,3 +1,4 @@
 *.db
 __pycache__
 *.bin
+test2.py
