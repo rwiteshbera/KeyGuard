@@ -2,8 +2,8 @@ import unittest
 import shutil
 import os
 
-from src.config.init import ConfigureVault
-from src.entry.entry import AddNewEntry, RetrieveEntry
+from src.vault.vault import VaultManager
+from src.entry.entry import EntryManager
 from rich import print as printC
 from rich.console import Console
 
@@ -20,13 +20,14 @@ class TestVaultOperations(unittest.TestCase):
     def test_vault_operations(self):
         try:
             # Configure the vault
-            ConfigureVault(self.name, self.email, self.masterPassword)
+            VaultManager().ConfigureVault(self.name, self.email, self.masterPassword)
             
             # Add a new entry to the vault
-            AddNewEntry(self.email, self.masterPassword, self.sitename, self.siteurl, self.username, self.password)
+            e = EntryManager()
+            e.AddNewEntry(self.email, self.masterPassword, self.sitename, self.siteurl, self.username, self.password)
 
             # Retrieve the entry from the vault
-            RetrieveEntry(self.email, self.masterPassword, self.sitename)
+            e.RetrieveEntry(self.email, self.masterPassword, self.sitename)
 
             printC("\n[green][✔][/green] All tests passed")
         except Exception as e:
