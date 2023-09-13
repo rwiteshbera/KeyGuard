@@ -142,9 +142,10 @@ class Input:
             masterPasswordHash = Key.computeMasterPasswordHash(
                 salt=masterPassword.encode('utf-8'), payload=masterKey)
             vault.close()
+
             if master_password_hash != masterPasswordHash:
                 printC("[red][-] Wrong Credentials")
-                sys.exit(0)
+
         except Exception as e:
             console.print_exception()
             sys.exit(0)
