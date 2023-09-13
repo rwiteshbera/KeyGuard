@@ -6,7 +6,6 @@ from src.compute.KeyDerivation import KeyDerivation
 
 from rich import print as printC
 from rich.console import Console
-console = Console()
 
 
 class VaultConnection:
@@ -21,7 +20,7 @@ class VaultConnection:
             try:
                 os.mkdir(self._vault_directory)
             except Exception as e:
-                console.print_exception()
+                Console().print_exception()
                 sys.exit(0)
 
         return vault_path
@@ -31,7 +30,7 @@ class VaultConnection:
             vault_path = self.__checkVaultDirectory()
             return sqlite3.connect(vault_path)
         except Exception as e:
-            printC("[red][!] An error occured while trying to configure vault")
+            Console().print_exception()
             sys.exit(0)
 
 
@@ -60,8 +59,7 @@ class VaultManager(VaultConnection):
             vault.close()
 
         except Exception as e:
-            printC("[red][!] An error occured while trying to create vault")
-            console.print_exception()
+            Console().print_exception()
             sys.exit(0)
 
     def ConfigureVault(self, name: str, email: str, masterPassword: str):
@@ -99,6 +97,5 @@ class VaultManager(VaultConnection):
             vault.close()
 
         except Exception as e:
-            printC("[red][!] An error occured while trying to configure vault")
-            console.print_exception()
+            Console().print_exception()
             sys.exit(0)

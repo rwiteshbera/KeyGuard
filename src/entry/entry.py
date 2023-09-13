@@ -8,8 +8,6 @@ from src.vault.vault import VaultManager
 
 from rich import print as printC
 from rich.console import Console
-console = Console()
-
 
 class EntryManager:
     def AddNewEntry(self, email: str, masterPassword: str, name: str, siteurl: str, username: str, password: str):
@@ -57,8 +55,7 @@ class EntryManager:
             # Close the vault
             vault.close()
         except Exception as e:
-            printC("[red][!] An error occured while trying to create database.")
-            console.print_exception()
+            Console().print_exception()
             sys.exit(0)
 
     def RetrieveEntry(self, email: str, masterPassword: str, name: str):
@@ -88,7 +85,6 @@ class EntryManager:
             if password is not None:
                 del data['password']
 
-                print(f"Name: {data['name']}")
                 print(f"Siteurl: {data['siteurl']}")
                 print(f"Username: {data['username']}")
                 print()
@@ -100,6 +96,5 @@ class EntryManager:
                 sys.exit(0)
 
         except Exception as e:
-            printC("[red][!] An error occured while trying to retrieve entry.")
-            console.print_exception()
+            Console().print_exception()
             sys.exit(0)

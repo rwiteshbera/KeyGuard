@@ -6,7 +6,6 @@ from src.vault.vault import VaultConnection
 from src.compute.KeyDerivation import KeyDerivation
 from rich import print as printC
 from rich.console import Console
-console = Console()
 
 
 class Input:
@@ -20,6 +19,8 @@ class Input:
                 printC("[yellow][!] Name cannot be empty. [/yellow]")
                 continue
             else:
+                # Remove leading and trailing spaces
+                name = name.strip()
                 break
 
         return name
@@ -31,6 +32,7 @@ class Input:
             try:
                 # Enter User Email
                 email = input("Email: ")
+                email = email.strip().lower()
                 if not email:
                     printC("[yellow][!] Email cannot be empty. [/yellow]")
                     continue
@@ -65,6 +67,14 @@ class Input:
                 printC("[yellow][!] Master Password cannot be empty. [/yellow]")
                 continue
             else:
+                # Remove leading and traling spaces
+                masterPassword = masterPassword.strip()
+
+                # It should not contain any space in the middle
+                if ' ' in masterPassword:
+                    printC("[yellow][!] Master Password cannot have space. [/yellow]")
+                    continue
+
                 break
 
         if self.isValidMasterPassword(masterPassword) == False:
@@ -90,6 +100,7 @@ class Input:
                 printC("[yellow][!] Master Password cannot be empty. [/yellow]")
                 continue
             else:
+                masterPassword = masterPassword.strip()
                 break
 
         return masterPassword
@@ -123,13 +134,17 @@ class Input:
 
 # Verify Master Password
 
+
     def verifyMasterPassword(self, email: str, masterPassword: str):
         try:
+            email = email.strip().lower()
+            masterPassword = masterPassword.strip()
+
             # Connect with vault
             vault = VaultConnection().connectVault()
             cursor = vault.cursor()
 
-            master_password_hash = cursor.execute(
+            (master_password_hash,)= cursor.execute(
                 'SELECT master_password_hash FROM secrets WHERE email = ?', (email,)).fetchone()
 
             if master_password_hash is None:
@@ -142,10 +157,11 @@ class Input:
             masterPasswordHash = Key.computeMasterPasswordHash(
                 salt=masterPassword.encode('utf-8'), payload=masterKey)
             vault.close()
-
+            
             if master_password_hash != masterPasswordHash:
                 printC("[red][-] Wrong Credentials")
+                sys.exit(0)
 
         except Exception as e:
-            console.print_exception()
+            Console().print_exception()
             sys.exit(0)

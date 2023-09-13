@@ -63,3 +63,4 @@ elif argument == "--init" or argument == "--i":
     masterPassword = prompt.setNewMasterPassword()
 
     VaultManager().ConfigureVault(name, email, masterPassword)
+

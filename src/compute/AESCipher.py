@@ -3,8 +3,6 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import sys
 from rich import print as printC
 from rich.console import Console
-console = Console()
-
 
 class AESCipher:
     # Symmetric Encryption
@@ -27,7 +25,7 @@ class AESCipher:
             return cipherText
 
         except Exception as e:
-            console.print_exception()
+            Console().print_exception()
             sys.exit(0)
 
     # Decrypt Site Entry
@@ -46,5 +44,5 @@ class AESCipher:
             return data_bytes
 
         except Exception as e:
-            console.print_exception()
+            Console().print_exception()
             sys.exit(0)

@@ -11,7 +11,7 @@ class TestVaultOperations(unittest.TestCase):
     def setUp(self):
         self.name = "Rwitesh Bera"
         self.email = "testgmail.com"
-        self.masterPassword = "abc"
+        self.masterPassword = "abcd"
         self.sitename = "Test"
         self.siteurl = "https://www.test.com"
         self.username = "test@gmail.com"
