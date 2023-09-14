@@ -12,23 +12,32 @@ class VaultConnection:
     def __init__(self, vault_directory="./vault", vault_file="vault.db") -> None:
         self._vault_directory = vault_directory
         self._vault_file = vault_file
-
-    # Check if the "vault" directory exists; if not, create it
-    def __checkVaultDirectory(self):
-        vault_path = os.path.join(self._vault_directory, self._vault_file)
-        if not os.path.exists(self._vault_directory):
+        self.vault_path = os.path.join(self._vault_directory, self._vault_file)
+        
+    # Check if the "vault" directory exists
+    def checkVault(self):
+        if not os.path.exists(self.vault_path):
             try:
-                os.mkdir(self._vault_directory)
+                printC("[red]No vault found[/red]")
+                sys.exit(0)
+
+            except Exception as e:
+                Console().print_exception()
+                sys.exit(0)
+    
+    def createVault(self):
+        if not os.path.exists(self.vault_path):
+            try:
+                os.mkdir(self.vault_path)
+
             except Exception as e:
                 Console().print_exception()
                 sys.exit(0)
 
-        return vault_path
-
     def connectVault(self):
         try:
-            vault_path = self.__checkVaultDirectory()
-            return sqlite3.connect(vault_path)
+            self.checkVault()
+            return sqlite3.connect(self.vault_path)
         except Exception as e:
             Console().print_exception()
             sys.exit(0)
@@ -38,9 +47,12 @@ class VaultManager(VaultConnection):
     # Create 2 tables inside vault
     # secrets : To store admin login credentials
     # entry : Managing data inside the vault
-    def __CreateNewVault(self):
+    def createNewVault(self):
         print("Create a new vault:")
         try:
+            # create Vault if not exists
+            self.createVault()
+
             # Connect with vault
             vault = super().connectVault()
             cursor = vault.cursor()
@@ -62,9 +74,10 @@ class VaultManager(VaultConnection):
             Console().print_exception()
             sys.exit(0)
 
-    def ConfigureVault(self, name: str, masterPassword: str):
-        self.__CreateNewVault()
+    def configureVault(self, name: str, masterPassword: str):
         try:
+            self.createNewVault()
+
             Key = KeyDerivation()
 
             # Generate Phrase

@@ -1,7 +1,10 @@
 from src.input.input import Input
 from src.compute.KeyDerivation import KeyDerivation
+from src.vault.vault import VaultManager
 
 def Login():
+    VaultManager().checkVault()
+    
     prompt = Input()
     
     print("Login ")
