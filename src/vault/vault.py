@@ -13,22 +13,17 @@ class VaultConnection:
         self._vault_directory = vault_directory
         self._vault_file = vault_file
         self.vault_path = os.path.join(self._vault_directory, self._vault_file)
-        
+
     # Check if the "vault" directory exists
     def checkVault(self):
         if not os.path.exists(self.vault_path):
-            try:
-                printC("[red]No vault found[/red]")
-                sys.exit(0)
+            return False
+        return True
 
-            except Exception as e:
-                Console().print_exception()
-                sys.exit(0)
-    
     def createVault(self):
-        if not os.path.exists(self.vault_path):
+        if not os.path.exists(self._vault_directory):
             try:
-                os.mkdir(self.vault_path)
+                os.mkdir(self._vault_directory)
 
             except Exception as e:
                 Console().print_exception()
