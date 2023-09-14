@@ -135,32 +135,36 @@ class Input:
 # Verify Master Password
 
 
-    def verifyMasterPassword(self, email: str, masterPassword: str):
+    def verifyMasterPassword(self, masterPassword: str):
         try:
-            email = email.strip().lower()
             masterPassword = masterPassword.strip()
 
             # Connect with vault
             vault = VaultConnection().connectVault()
             cursor = vault.cursor()
 
-            (master_password_hash,)= cursor.execute(
-                'SELECT master_password_hash FROM secrets WHERE email = ?', (email,)).fetchone()
+            res = cursor.execute(
+                'SELECT * FROM secrets').fetchall()
 
-            if master_password_hash is None:
-                printC("[red][-] No account found with this email")
+            if (len(res) == 0):
+                printC("[red][-] No vault found")
                 sys.exit(0)
+
+            (name, master_password_hash_fromDB, phrase) = res[0]
+            vault.close()
 
             Key = KeyDerivation()
             masterKey = Key.computeMasterKey(
-                salt=email.encode('utf-8'), payload=masterPassword.encode('utf-8'))
+                payload=masterPassword.encode('utf-8'), salt=phrase)
+
             masterPasswordHash = Key.computeMasterPasswordHash(
-                salt=masterPassword.encode('utf-8'), payload=masterKey)
-            vault.close()
+                payload=masterKey, salt=masterPassword.encode('utf-8'))
             
-            if master_password_hash != masterPasswordHash:
+            if master_password_hash_fromDB != masterPasswordHash:
                 printC("[red][-] Wrong Credentials")
                 sys.exit(0)
+
+            return (name, masterKey, masterPasswordHash, phrase)
 
         except Exception as e:
             Console().print_exception()

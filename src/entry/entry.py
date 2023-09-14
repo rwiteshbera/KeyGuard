@@ -9,8 +9,9 @@ from src.vault.vault import VaultManager
 from rich import print as printC
 from rich.console import Console
 
+
 class EntryManager:
-    def AddNewEntry(self, email: str, masterPassword: str):
+    def AddNewEntry(self, encryptionKey: bytes, phrase: bytes):
         try:
             print("\nAdd New Entry")
             name = input("name: ")
@@ -21,37 +22,18 @@ class EntryManager:
             data = {"name": name, "siteurl": siteurl,
                     "username": username, "password": password}
 
-            Key = KeyDerivation()
-
-            # Compute Master Key from Email and MASTER PASSWORD
-            # From (salt = email, payload = MASTER PASSWORD) -> To (Master Key)
-            masterKey = Key.computeMasterKey(
-                salt=email.encode('utf-8'), payload=masterPassword.encode('utf-8'))
-
-            # Compute Master Password Hash from Master Key and MASTER PASSWORD
-            # From (salt = MASTER PASSWORD, payload = Master Key) -> To (Master Password Hash)
-            masterPasswordHash = Key.computeMasterPasswordHash(
-                salt=masterPassword.encode('utf-8'), payload=masterKey)
-
-            encryptionKey = Key.computeEncryptionKey(
-                salt=masterKey, payload=masterPasswordHash)
-
             # Connect with vault
             vault = VaultManager().connectVault()
             cursor = vault.cursor()
 
-            res = cursor.execute(
-                "SELECT vector FROM secrets WHERE email = ? ", (email,))
-            iv = res.fetchone()
-
             aes = AESCipher()
             # Encrypt using AES 256 - Symmetric
             token = aes.EncryptAES256(data_bytes=str(data).encode(
-                'utf-8'), key=encryptionKey, iv=iv[0])
+                'utf-8'), key=encryptionKey, iv=phrase)
 
             # Insert data
-            cursor.execute("INSERT INTO entries (name, token, admin) VALUES (?, ?, ?)",
-                           (data['name'], token, email))
+            cursor.execute("INSERT INTO entries (name, token) VALUES (?, ?)",
+                           (name, token))
 
             # Commit
             vault.commit()
@@ -64,7 +46,7 @@ class EntryManager:
             Console().print_exception()
             sys.exit(0)
 
-    def RetrieveEntry(self, email: str, masterPassword: str):
+    def RetrieveEntry(self, encryptionKey: bytes, phrase: bytes):
         try:
             name = input("Name: ")
 
@@ -72,19 +54,11 @@ class EntryManager:
             vault = VaultManager().connectVault()
             cursor = vault.cursor()
 
-            token, vector = cursor.execute(
-                'SELECT entries.token, secrets.vector FROM entries INNER JOIN secrets ON entries.admin = secrets.email WHERE entries.name = ? AND entries.admin = ?', (name, email,)).fetchone()
-
-            Key = KeyDerivation()
-            masterKey = Key.computeMasterKey(
-                salt=email.encode('utf-8'), payload=masterPassword.encode('utf-8'))
-            masterPasswordHash = Key.computeMasterPasswordHash(
-                salt=masterPassword.encode('utf-8'), payload=masterKey)
-            encryptionKey = Key.computeEncryptionKey(
-                salt=masterKey, payload=masterPasswordHash)
+            (token,) = cursor.execute(
+                'SELECT token FROM entries WHERE name = ?', (name,)).fetchone()
 
             aes = AESCipher()
-            raw = aes.DecryptAES256(token, key=encryptionKey, iv=vector)
+            raw = aes.DecryptAES256(token, key=encryptionKey, iv=phrase)
             data = ast.literal_eval(raw.decode('utf-8'))
 
             password = data.get('password')

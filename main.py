@@ -20,17 +20,17 @@ argument = sys.argv[1]
 DisplayBanner()
 
 if argument == "--add" or argument == '--a':
-    (email, masterPassword) = Login()
+    (name, encryptionKey, phrase)= Login()
 
-    EntryManager().AddNewEntry(email, masterPassword)
+    EntryManager().AddNewEntry(encryptionKey=encryptionKey, phrase=phrase)
 
 
 elif argument == "--get" or argument == '--g':
-    (email, masterPassword) = Login()
+    (name, encryptionKey, phrase) = Login()
 
-    EntryManager().RetrieveEntry(email, masterPassword)
+    EntryManager().RetrieveEntry(encryptionKey=encryptionKey, phrase=phrase)
 
 elif argument == "--init" or argument == "--i":
-    (name, email, masterPassword) = Register()
+    (name, masterPassword) = Register()
 
-    VaultManager().ConfigureVault(name, email, masterPassword)
+    VaultManager().ConfigureVault(name, masterPassword)

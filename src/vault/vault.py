@@ -47,10 +47,10 @@ class VaultManager(VaultConnection):
 
             # Create Table
             cursor.execute(
-                "CREATE TABLE IF NOT EXISTS secrets (email TEXT PRIMARY KEY, name TEXT NOT NULL, master_password_hash TEXT NOT NULL, vector TEXT NOT NULL)")
+                "CREATE TABLE IF NOT EXISTS secrets (name TEXT NOT NULL, master_password_hash TEXT NOT NULL, phrase TEXT NOT NULL)")
 
             cursor.execute(
-                "CREATE TABLE IF NOT EXISTS entries (name TEXT PRIMARY KEY, token TEXT NOT NULL, admin TEXT NOT NULL, FOREIGN KEY (admin) REFERENCES secrets(email))")
+                "CREATE TABLE IF NOT EXISTS entries (name TEXT NOT NULL, token TEXT NOT NULL)")
 
             # Commit
             vault.commit()
@@ -62,31 +62,30 @@ class VaultManager(VaultConnection):
             Console().print_exception()
             sys.exit(0)
 
-    def ConfigureVault(self, name: str, email: str, masterPassword: str):
+    def ConfigureVault(self, name: str, masterPassword: str):
         self.__CreateNewVault()
         try:
             Key = KeyDerivation()
 
-            # Compute Master Key from Email and MASTER PASSWORD
-            # From (salt = email, payload = MASTER PASSWORD) -> To (Master Key)
+            # Generate Phrase
+            phrase = os.urandom(16)
+
+            # Compute Master Key from Unique phrase and MASTER PASSWORD
             masterKey = Key.computeMasterKey(
-                salt=email.encode('utf-8'), payload=masterPassword.encode('utf-8'))
+                payload=masterPassword.encode('utf-8'), salt=phrase)
 
             # Compute Master Password Hash from Master Key and MASTER PASSWORD
             # From (salt = MASTER PASSWORD, payload = Master Key) -> To (Master Password Hash)
             masterPasswordHash = Key.computeMasterPasswordHash(
-                salt=masterPassword.encode('utf-8'), payload=masterKey)
-
-            # Generate Vector
-            vector = os.urandom(16)
+                payload=masterKey, salt=masterPassword.encode('utf-8'),)
 
             # Connect with vault
             vault = super().connectVault()
             cursor = vault.cursor()
 
             # Insert data
-            cursor.execute("INSERT INTO secrets (name, email, master_password_hash, vector) VALUES (?, ?, ?, ?)",
-                           (name, email, masterPasswordHash, vector))
+            cursor.execute("INSERT INTO secrets (name, master_password_hash, phrase) VALUES (?, ?, ?)",
+                           (name,  masterPasswordHash, phrase))
 
             # Commit
             vault.commit()

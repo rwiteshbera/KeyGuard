@@ -1,27 +1,29 @@
 from src.input.input import Input
-
+from src.compute.KeyDerivation import KeyDerivation
 
 def Login():
     prompt = Input()
     
     print("Login ")
-    # Enter Email
-    email = prompt.setEmail()
 
     # Enter MASTER PASSWORD
     masterPassword = prompt.setMasterPassword()
 
     # Verify Master Password
-    prompt.verifyMasterPassword(email=email, masterPassword=masterPassword)
+    (name, masterKey, masterPasswordHash, phrase) = prompt.verifyMasterPassword(masterPassword=masterPassword)
 
-    return email, masterPassword
+    Key = KeyDerivation()
+
+    encryptionKey = Key.computeEncryptionKey(
+                salt=masterKey, payload=masterPasswordHash)
+
+    return (name, encryptionKey, phrase)
 
 
 def Register():
     prompt = Input()
     name = prompt.setName()
-    email = prompt.setEmail()
 
     masterPassword = prompt.setNewMasterPassword()
 
-    return (name, email, masterPassword)
+    return (name, masterPassword)
