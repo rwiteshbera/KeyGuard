@@ -1,7 +1,7 @@
 import sys
 import ast
 import pyperclip
-
+from getpass import getpass
 from src.compute.KeyDerivation import KeyDerivation
 from src.compute.AESCipher import AESCipher
 from src.vault.vault import VaultManager
@@ -10,8 +10,14 @@ from rich import print as printC
 from rich.console import Console
 
 class EntryManager:
-    def AddNewEntry(self, email: str, masterPassword: str, name: str, siteurl: str, username: str, password: str):
+    def AddNewEntry(self, email: str, masterPassword: str):
         try:
+            print("\nAdd New Entry")
+            name = input("name: ")
+            siteurl = input("URL: ")
+            username = input("Username: ")
+            password = getpass("Password: ")
+
             data = {"name": name, "siteurl": siteurl,
                     "username": username, "password": password}
 
@@ -58,8 +64,10 @@ class EntryManager:
             Console().print_exception()
             sys.exit(0)
 
-    def RetrieveEntry(self, email: str, masterPassword: str, name: str):
+    def RetrieveEntry(self, email: str, masterPassword: str):
         try:
+            name = input("Name: ")
+
             # Connect with vault
             vault = VaultManager().connectVault()
             cursor = vault.cursor()

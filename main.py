@@ -4,7 +4,8 @@ from getpass import getpass
 
 
 from src.banner import DisplayBanner
-from src.input.input import Input
+from src.login import Login
+from src.login import Register
 from src.entry.entry import EntryManager
 from src.vault.vault import VaultManager
 from rich import print as printC
@@ -19,48 +20,17 @@ argument = sys.argv[1]
 DisplayBanner()
 
 if argument == "--add" or argument == '--a':
-    prompt = Input()
-    
-    print("Login ")
-    # Enter Email
-    email = prompt.setEmail()
+    (email, masterPassword) = Login()
 
-    # Enter MASTER PASSWORD
-    masterPassword = prompt.setMasterPassword()
-
-    # verifyMasterPassword
-    prompt.verifyMasterPassword(email=email, masterPassword=masterPassword)
-
-    print("\nAdd New Entry")
-    name = input("name: ")
-    siteurl = input("URL: ")
-    username = input("Username: ")
-    password = getpass("Password: ")
-
-    EntryManager().AddNewEntry(email, masterPassword, name, siteurl, username, password)
+    EntryManager().AddNewEntry(email, masterPassword)
 
 
 elif argument == "--get" or argument == '--g':
-    prompt = Input()
-    # Enter Email
-    email = input("email: ")
+    (email, masterPassword) = Login()
 
-    # Ask MASTER PASSWORD
-    masterPassword = prompt.setMasterPassword()
-
-    # verifyMasterPassword
-    prompt.verifyMasterPassword(email=email, masterPassword=masterPassword)
-
-    name = input("Name: ")
-
-    EntryManager().RetrieveEntry(email, masterPassword, name)
+    EntryManager().RetrieveEntry(email, masterPassword)
 
 elif argument == "--init" or argument == "--i":
-    prompt = Input()
-    name = prompt.setName()
-    email = prompt.setEmail()
-
-    masterPassword = prompt.setNewMasterPassword()
+    (name, email, masterPassword) = Register()
 
     VaultManager().ConfigureVault(name, email, masterPassword)
-
