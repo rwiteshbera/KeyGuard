@@ -3,6 +3,7 @@ import os
 import sqlite3
 
 from src.compute.KeyDerivation import KeyDerivation
+from src.compute.AESCipher import AESCipher
 
 from rich import print as printC
 from rich.console import Console
@@ -57,7 +58,7 @@ class VaultManager(VaultConnection):
                 "CREATE TABLE IF NOT EXISTS secrets (name TEXT NOT NULL, master_password_hash TEXT NOT NULL, phrase TEXT NOT NULL)")
 
             cursor.execute(
-                "CREATE TABLE IF NOT EXISTS entries (name TEXT NOT NULL, token TEXT NOT NULL)")
+                "CREATE TABLE IF NOT EXISTS entries (name TEXT PRIMARY KEY, token TEXT NOT NULL)")
 
             # Commit
             vault.commit()
@@ -74,6 +75,7 @@ class VaultManager(VaultConnection):
             self.createNewVault()
 
             Key = KeyDerivation()
+            aes = AESCipher()
 
             # Generate Phrase
             phrase = os.urandom(16)
@@ -83,9 +85,9 @@ class VaultManager(VaultConnection):
                 payload=masterPassword.encode('utf-8'), salt=phrase)
 
             # Compute Master Password Hash from Master Key and MASTER PASSWORD
-            # From (salt = MASTER PASSWORD, payload = Master Key) -> To (Master Password Hash)
             masterPasswordHash = Key.computeMasterPasswordHash(
                 payload=masterKey, salt=masterPassword.encode('utf-8'),)
+
 
             # Connect with vault
             vault = super().connectVault()

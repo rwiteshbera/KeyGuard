@@ -30,10 +30,12 @@ class EntryManager:
             # Encrypt using AES 256 - Symmetric
             token = aes.EncryptAES256(data_bytes=str(data).encode(
                 'utf-8'), key=encryptionKey, iv=phrase)
+            
+            encryptedName = aes.EncryptAES256(data_bytes=name.encode('utf-8'), key=encryptionKey, iv=phrase )
 
             # Insert data
             cursor.execute("INSERT INTO entries (name, token) VALUES (?, ?)",
-                           (name, token))
+                           (encryptedName, token))
 
             # Commit
             vault.commit()
@@ -49,13 +51,16 @@ class EntryManager:
     def RetrieveEntry(self, encryptionKey: bytes, phrase: bytes):
         try:
             name = input("Name: ")
+            
+            aes = AESCipher()
+            encryptedName = aes.EncryptAES256(data_bytes=name.encode('utf-8'), key=encryptionKey, iv=phrase )
 
             # Connect with vault
             vault = VaultManager().connectVault()
             cursor = vault.cursor()
 
             (token,) = cursor.execute(
-                'SELECT token FROM entries WHERE name = ?', (name,)).fetchone()
+                'SELECT token FROM entries WHERE name = ?', (encryptedName,)).fetchone()
 
             aes = AESCipher()
             raw = aes.DecryptAES256(token, key=encryptionKey, iv=phrase)
