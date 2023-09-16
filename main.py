@@ -1,5 +1,5 @@
 import sys
-
+import argparse
 from src.banner import DisplayBanner
 from src.login import Login
 from src.login import Register
@@ -11,23 +11,25 @@ class Main:
         DisplayBanner()
 
     def run(self):
-        if len(sys.argv) <= 1:
-            sys.exit(0)
+        parser = argparse.ArgumentParser(prog="PassGuard", description="Password Manager")
+        parser.add_argument("--init", "--i", action="store_true", help="Initialize the vault")
+        parser.add_argument("--add", "--a", action="store_true", help="Add a new entry to the vault")
+        parser.add_argument("--get", "--g", action="store_true", help="Retrieve an entry from the vault")
 
-        argument = sys.argv[1]
+        args = parser.parse_args()
 
-        if argument == "--init" or argument == "--i":
+        if args.init:
             (name, masterPassword) = Register()
-
             VaultManager().configureVault(name, masterPassword)
 
-        elif argument == "--add" or argument == '--a':
+        elif args.add:
             (name, encryptionKey, phrase) = Login()
             EntryManager().AddNewEntry(encryptionKey=encryptionKey, phrase=phrase)
 
-        elif argument == "--get" or argument == '--g':
+        elif args.get:
             (name, encryptionKey, phrase) = Login()
             EntryManager().RetrieveEntry(encryptionKey=encryptionKey, phrase=phrase)
+
 
 if __name__ == "__main__":
     app = Main()

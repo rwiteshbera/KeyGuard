@@ -7,6 +7,6 @@ console = Console()
 
 
 def DisplayBanner():
-    ascii_banner = pyfiglet.figlet_format("PassGuard")
+    ascii_banner = pyfiglet.figlet_format("KeyGuard")
     termcolor.cprint(ascii_banner, color="blue")
-    printC("[green]PassGuard 2023 v0.1")
+    printC("[green]KeyGuard 2023 v0.5")
