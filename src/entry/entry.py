@@ -15,12 +15,10 @@ class EntryManager:
         try:
             print("\nAdd New Entry")
             name = input("name: ")
-            siteurl = input("URL: ")
             username = input("Username: ")
             password = getpass("Password: ")
 
-            data = {"name": name, "siteurl": siteurl,
-                    "username": username, "password": password}
+            data = {"name": name, "username": username, "password": password}
 
             # Connect with vault
             vault = VaultManager().connectVault()
@@ -72,7 +70,7 @@ class EntryManager:
             if password is not None:
                 del data['password']
 
-                print(f"Siteurl: {data['siteurl']}")
+                print(f"Siteurl: {data['name']}")
                 print(f"Username: {data['username']}")
                 print()
 
