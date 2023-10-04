@@ -2,7 +2,9 @@ import sys
 import os
 import sqlite3
 
+from src.compute.DeviceId import getDeviceId
 from src.compute.KeyDerivation import KeyDerivation
+from src.compute.DeviceId import getDeviceId
 from src.compute.AESCipher import AESCipher
 
 from rich import print as printC
@@ -55,7 +57,7 @@ class VaultManager(VaultConnection):
 
             # Create Table
             cursor.execute(
-                "CREATE TABLE IF NOT EXISTS secrets (name TEXT NOT NULL, master_password_hash TEXT NOT NULL, phrase TEXT NOT NULL)")
+                "CREATE TABLE IF NOT EXISTS secrets (name TEXT NOT NULL, master_password_hash TEXT NOT NULL, phrase TEXT NOT NULL, device TEXT NOT NULL)")
 
             cursor.execute(
                 "CREATE TABLE IF NOT EXISTS entries (name TEXT PRIMARY KEY, token TEXT NOT NULL)")
@@ -80,6 +82,9 @@ class VaultManager(VaultConnection):
             # Generate Phrase
             phrase = os.urandom(16)
 
+            # Get Device id
+            deviceId = getDeviceId()
+
             # Compute Master Key from Unique phrase and MASTER PASSWORD
             masterKey = Key.computeMasterKey(
                 payload=masterPassword.encode('utf-8'), salt=phrase)
@@ -88,14 +93,13 @@ class VaultManager(VaultConnection):
             masterPasswordHash = Key.computeMasterPasswordHash(
                 payload=masterKey, salt=masterPassword.encode('utf-8'),)
 
-
             # Connect with vault
             vault = super().connectVault()
             cursor = vault.cursor()
 
             # Insert data
-            cursor.execute("INSERT INTO secrets (name, master_password_hash, phrase) VALUES (?, ?, ?)",
-                           (name,  masterPasswordHash, phrase))
+            cursor.execute("INSERT INTO secrets (name, master_password_hash, phrase, device) VALUES (?, ?, ?, ?)",
+                           (name,  masterPasswordHash, phrase, deviceId))
 
             # Commit
             vault.commit()
@@ -108,3 +112,10 @@ class VaultManager(VaultConnection):
         except Exception as e:
             Console().print_exception()
             sys.exit(0)
+
+
+def VerifyDevice(deviceId: str) -> bool:
+    # Verify Device
+    if (deviceId != getDeviceId()):
+        return False
+    return True

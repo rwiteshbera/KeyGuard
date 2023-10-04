@@ -3,6 +3,7 @@ import string
 import email_validator
 from getpass import getpass
 from src.vault.vault import VaultConnection
+from src.vault.vault import VerifyDevice
 from src.compute.KeyDerivation import KeyDerivation
 from rich import print as printC
 from rich.console import Console
@@ -72,7 +73,8 @@ class Input:
 
                 # It should not contain any space in the middle
                 if ' ' in masterPassword:
-                    printC("[yellow][!] Master Password cannot have space. [/yellow]")
+                    printC(
+                        "[yellow][!] Master Password cannot have space. [/yellow]")
                     continue
 
                 break
@@ -150,8 +152,15 @@ class Input:
                 printC("[red][-] No vault found")
                 sys.exit(0)
 
-            (name, master_password_hash_fromDB, phrase) = res[0]
+            (name, master_password_hash_fromDB, phrase, device) = res[0]
             vault.close()
+            # Check if the device is registered or not
+            isRegisteredDevice = VerifyDevice(
+                deviceId=device)
+            if isRegisteredDevice == False:
+                printC(
+                    "[red] New Device Detected! [/red]")
+                print()
 
             Key = KeyDerivation()
             masterKey = Key.computeMasterKey(
@@ -159,7 +168,9 @@ class Input:
 
             masterPasswordHash = Key.computeMasterPasswordHash(
                 payload=masterKey, salt=masterPassword.encode('utf-8'))
+
             
+
             if master_password_hash_fromDB != masterPasswordHash:
                 printC("[red][-] Wrong Credentials")
                 sys.exit(0)
