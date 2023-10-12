@@ -2,6 +2,8 @@
 
 KeyGuard is a simple and secure password manager that allows you to store and retrieve your passwords and other sensitive information locally on your computer. This password manager is designed to be easy to use and provides a safe and convenient way to manage your passwords. Here, we will guide you through the usage of KeyGuard.
 
+![CLI](/assets/cli.png)
+
 ## Getting Started
 
 ### Installation
